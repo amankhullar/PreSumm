@@ -7,6 +7,7 @@ import os
 import random
 import re
 import subprocess
+import sys
 from collections import Counter
 from os.path import join as pjoin
 
@@ -338,17 +339,19 @@ def format_to_lines(args):
     train_files, valid_files, test_files = [], [], []
     for f in glob.glob(pjoin(args.raw_path, '*.json')):
         real_name = f.split('/')[-1].split('.')[0]
-        if (real_name in corpus_mapping['valid']):
-            valid_files.append(f)
-        elif (real_name in corpus_mapping['test']):
-            test_files.append(f)
-        elif (real_name in corpus_mapping['train']):
-            train_files.append(f)
+        #if (real_name in corpus_mapping['valid']):
+        #    valid_files.append(f)
+        #elif (real_name in corpus_mapping['test']):
+        #    test_files.append(f)
+        #elif (real_name in corpus_mapping['train']):
+        test_files.append(f)
         # else:
         #     train_files.append(f)
 
-    corpora = {'train': train_files, 'valid': valid_files, 'test': test_files}
-    for corpus_type in ['train', 'valid', 'test']:
+    #corpora = {'train': train_files, 'valid': valid_files, 'test': test_files}
+    corpora = {'test': test_files}
+    #for corpus_type in ['train', 'valid', 'test']:
+    for corpus_type in ['test']:
         a_lst = [(f, args) for f in corpora[corpus_type]]
         pool = Pool(args.n_cpus)
         dataset = []
