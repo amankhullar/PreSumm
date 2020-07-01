@@ -42,10 +42,11 @@ def main(src_tran_pth, src_desc_pth, dest_pth):
 
 if __name__ == "__main__":
     text_path = '/home/aman_khullar/PreSumm/raw_data'
+    how2_dir_path = '/home/aman_khullar/how2'
     splits = ['devtest', 'cv', 'train']
     for split_name in splits:
-        src_tran_path = os.path.join(text_path, 'text_300/sum_{}_300/tran.tok.txt'.format(split_name))
-        src_desc_path = os.path.join(text_path, 'text_300/sum_{}_300/desc.tok.txt'.format(split_name))
+        src_tran_path = os.path.join(how2_dir_path, 'text_300/sum_{}_300/tran.tok.txt'.format(split_name))
+        src_desc_path = os.path.join(how2_dir_path, 'text_300/sum_{}_300/desc.tok.txt'.format(split_name))
         dest_pth = os.path.join(text_path, 'how2_stories/sum_{}_300'.format(split_name))
         main(src_tran_path, src_desc_path, dest_pth)
 

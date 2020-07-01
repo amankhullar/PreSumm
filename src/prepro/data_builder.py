@@ -278,9 +278,24 @@ def format_to_bert(args):
         datasets = [args.dataset]
     else:
         datasets = ['train', 'valid', 'test']
+    #print("Reached here Wohoo : {}".format(datasets))
+    #base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
     for corpus_type in datasets:
+        #if corpus_type == 'train':
+        #    raw_pth = os.path.join(base_dir, 'merged_stories_tokenized')
+        #elif corpus_type == 'valid':
+        #    raw_pth = os.path.join(base_dir, 'merged_stories_tokenized_val')
+        #elif corpus_type == 'test':
+        #    raw_pth = os.path.join(base_dir, 'merged_stories_tokenized_test')
+        #else:
+        #    print("Not in in dataset")
+        #    sys.exit()
         a_lst = []
+        #json_fs = os.listdir(raw_pth)
+        #for json_f in glob.glob(pjoin(args.raw_path, '.*.json')):
+        #for json_f in json_fs:
         for json_f in glob.glob(pjoin(args.raw_path, '*' + corpus_type + '.*.json')):
+            #if json_f.endswith('.json'):
             real_name = json_f.split('/')[-1]
             a_lst.append((corpus_type, json_f, args, pjoin(args.save_path, real_name.replace('json', 'bert.pt'))))
         print(a_lst)
@@ -302,6 +317,17 @@ def _format_to_bert(params):
     bert = BertData(args)
 
     logger.info('Processing %s' % json_file)
+   # print("PATH is : {}".format(json_file))
+   # base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+   # if corpus_type == 'train':
+   #     json_file = os.path.join(base_dir, 'merged_stories_tokenized', json_file)
+   # elif corpus_type == 'valid':
+   #     json_file = os.path.join(base_dir, 'merged_stories_tokenized_val', json_file)
+   # elif corpus_type == 'test':
+   #     json_file = os.path.join(base_dir, 'merged_stories_tokenized_test', json_file)
+   # else:
+   #     print("Not in in dataset")
+   #     sys.exit()
     jobs = json.load(open(json_file))
     datasets = []
     for d in jobs:
@@ -330,28 +356,36 @@ def _format_to_bert(params):
 
 
 def format_to_lines(args):
-    corpus_mapping = {}
-    for corpus_type in ['valid', 'test', 'train']:
-        temp = []
-        for line in open(pjoin(args.map_path, 'mapping_' + corpus_type + '.txt')):
-            temp.append(hashhex(line.strip()))
-        corpus_mapping[corpus_type] = {key.strip(): 1 for key in temp}
+    #corpus_mapping = {}
+    #for corpus_type in ['valid', 'test', 'train']:
+    #    temp = []
+    #    for line in open(pjoin(args.map_path, 'mapping_' + corpus_type + '.txt')):
+    #        temp.append(hashhex(line.strip()))
+    #    corpus_mapping[corpus_type] = {key.strip(): 1 for key in temp}
     train_files, valid_files, test_files = [], [], []
-    for f in glob.glob(pjoin(args.raw_path, '*.json')):
-        real_name = f.split('/')[-1].split('.')[0]
+    corpus_types = ['train', 'val', 'test']
+    for corpus_type in corpus_types:
+        for f in glob.glob(pjoin(args.raw_path+'_{}'.format(corpus_type), '*.json')):        
+            if corpus_type == 'train':
+                train_files.append(f)
+            if corpus_type == 'val':
+                valid_files.append(f)
+            if corpus_type == 'test':
+                test_files.append(f)
+        #real_name = f.split('/')[-1].split('.')[0]
         #if (real_name in corpus_mapping['valid']):
         #    valid_files.append(f)
         #elif (real_name in corpus_mapping['test']):
         #    test_files.append(f)
         #elif (real_name in corpus_mapping['train']):
-        test_files.append(f)
+        #    train_files.append(f)
         # else:
         #     train_files.append(f)
 
-    #corpora = {'train': train_files, 'valid': valid_files, 'test': test_files}
-    corpora = {'test': test_files}
-    #for corpus_type in ['train', 'valid', 'test']:
-    for corpus_type in ['test']:
+    corpora = {'train': train_files, 'valid': valid_files, 'test': test_files}
+    #corpora = {'test': test_files}
+    for corpus_type in ['train', 'valid', 'test']:
+    #for corpus_type in ['test']:
         a_lst = [(f, args) for f in corpora[corpus_type]]
         pool = Pool(args.n_cpus)
         dataset = []
